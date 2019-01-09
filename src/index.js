@@ -19,6 +19,18 @@ server.express.use((req, res, next) => {
   next();
 });
 
+//decode the JWT so we can get the user id on each request
+server.express.use(async (req, res, next) => {
+  if(!req.userId) {
+    return next ();
+  }
+  const user = await db.query.user({where:{id: req.userId}}, '{id, permissions,email,name}')
+  req.user = user;
+  next();
+});
+
+
+
 server.start(
   {
     cors: {

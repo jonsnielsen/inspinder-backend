@@ -8,6 +8,7 @@ type Mutation {
     description: String
     link: String
     image: String
+    tags: [String]
   ): Post
   updatePost(
     id: ID!
@@ -15,28 +16,47 @@ type Mutation {
     description: String
     link: String
     image: String
+    tags: [String]
   ): Post
   deletePost(id: ID!): Post
+
   signup(name: String!, password: String!, email: String!): User!
+
   signin(email: String!, password: String!): User!
+
   signout: SuccessMessage
+
   requestReset(email: String!): SuccessMessage
+
   resetPassword(
     resetToken: String!
     password: String!
     confirmPassword: String!
   ): User!
+
+  updatePermissions(permissions: [Permission], userId: ID!): User
+
 }
 type Query {
   posts: [Post]
   post(where: PostWhereUniqueInput!): Post
-  users: [User]
+  users: [User]!
   me: User
+  tags(userId: ID!, postId: ID): [Tag!]!
+  tag(where: TagWhereUniqueInput!): Tag
 }
 
 type User {
   id: ID!
   name: String!
   email: String!
-  permissions: [Permission]
+  permissions: [Permission!]
 }
+
+# type Tag {
+#   id: ID!
+#   user: User!
+#   name: String!
+#   posts: [Post!]!
+# }
+
