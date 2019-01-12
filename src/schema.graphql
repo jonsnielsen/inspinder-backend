@@ -1,56 +1,42 @@
 # import * from './generated/prisma.graphql'
 type SuccessMessage {
-  message: String
+	message: String
 }
+
+type TagId {
+  id: ID
+}
+
 type Mutation {
-  createPost(
-    title: String
-    description: String
-    link: String
-    image: String
-    tags: [String]
-  ): Post
-  updatePost(
-    id: ID!
-    title: String
-    description: String
-    link: String
-    image: String
-    tags: [String]
-  ): Post
-  deletePost(id: ID!): Post
-
-  signup(name: String!, password: String!, email: String!): User!
-
-  signin(email: String!, password: String!): User!
-
-  signout: SuccessMessage
-
-  requestReset(email: String!): SuccessMessage
-
-  resetPassword(
-    resetToken: String!
-    password: String!
-    confirmPassword: String!
-  ): User!
-
-  updatePermissions(permissions: [Permission], userId: ID!): User
-
+	createPost(title: String, description: String, link: String, image: String, tags: [String]): Post
+	updatePost(id: ID!, title: String, description: String, link: String, image: String, tags: [String]): Post
+	deletePost(id: ID!): Post
+	signup(name: String!, password: String!, email: String!): User!
+	signin(email: String!, password: String!): User!
+	signout: SuccessMessage
+	requestReset(email: String!): SuccessMessage
+	resetPassword(resetToken: String!, password: String!, confirmPassword: String!): User!
+	updatePermissions(permissions: [Permission], userId: ID!): User
 }
+
 type Query {
-  posts: [Post]
-  post(where: PostWhereUniqueInput!): Post
-  users: [User]!
-  me: User
-  tags(userId: ID!, postId: ID): [Tag!]!
-  tag(where: TagWhereUniqueInput!): Tag
+	posts: [Post]
+	post(where: PostWhereUniqueInput!): Post
+	users: [User]!
+	me: User
+	tags: [Tag!]!
+	tag(where: TagWhereUniqueInput!): Tag
+}
+
+type Subscription {
+	tagWithoutPosts: Tag!
 }
 
 type User {
-  id: ID!
-  name: String!
-  email: String!
-  permissions: [Permission!]
+	id: ID!
+	name: String!
+	email: String!
+	permissions: [Permission!]
 }
 
 # type Tag {
@@ -59,4 +45,3 @@ type User {
 #   name: String!
 #   posts: [Post!]!
 # }
-

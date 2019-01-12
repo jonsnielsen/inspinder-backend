@@ -1,4 +1,5 @@
-function createNewTags({ ctx, tags, userId, info }) {
+function createNewTags({ ctx, tags, userId, postId, info }) {
+  const posts = postId? { connect: postId } : [];
 	let newTagsDB = tags.map(
 		async (tagName) =>
 			await ctx.db.mutation.createTag(
@@ -6,7 +7,7 @@ function createNewTags({ ctx, tags, userId, info }) {
 					data: {
 						name: tagName,
 						user: { connect: { id: userId } },
-						posts: []
+						posts,
 					}
 				},
 				info
@@ -18,7 +19,7 @@ function createNewTags({ ctx, tags, userId, info }) {
 function updateTags({ctx,tags, data, info}) {
 	tags.forEach((tag) => {
 		ctx.db.mutation.updateTag({
-			data: data,
+			data,
 			where: { id: tag.id }
 		},info);
 	});

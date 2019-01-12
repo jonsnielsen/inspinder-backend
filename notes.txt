@@ -1,0 +1,44 @@
+subscribe.
+1. subscribe on the client to when tags' posts have changed.
+2. if the tag's posts are empty, delete the tag
+3. refresh the cache
+
+
+
+managin tags
+1. delete tags if they are empty serverside, not clientside in subscription
+2. subscription is just to notify that a tag has been deleted.
+
+
+
+
+
+
+
+
+  at Object.next (/home/jonathan/Documents/programming/websites/inspinder/inspinder_v2_backend/node_modules/graphql-binding/node_modules/graphql-tools/dist/stitching/delegateToSchema.js:21:53)
+    at fulfilled (/home/jonathan/Documents/programming/websites/inspinder/inspinder_v2_backend/node_modules/graphql-binding/node_modules/graphql-tools/dist/stitching/delegateToSchema.js:12:58)
+
+Error: Variable "$_v0_where" got invalid value {"userId":"cjqql3r31hbga0a061jljgh7p"}; Field "userId" is not defined by type PostWhereInput; did you mean user?
+    at new CombinedError (/home/jonathan/Documents/programming/websites/inspinder/inspinder_v2_backend/node_modules/graphql-binding/node_modules/graphql-tools/dist/stitching/errors.js:83:28)
+    at Object.checkResultAndHandleErrors (/home/jonathan/Documents/programming/websites/inspinder/inspinder_v2_backend/node_modules/graphql-binding/node_modules/graphql-tools/dist/stitching/errors.js:101:15)
+    at CheckResultAndHandleErrors.transformResult (/home/jonathan/Documents/programming/websites/inspinder/inspinder_v2_backend/node_modules/graphql-binding/node_modules/graphql-tools/dist/transforms/CheckResultAndHandleErrors.js:10:25)
+    at /home/jonathan/Documents/programming/websites/inspinder/inspinder_v2_backend/node_modules/graphql-binding/node_modules/graphql-tools/dist/transforms/transforms.js:19:54
+    at Array.reduce (<anonymous>)
+
+Error: Variable "$_v0_where" got invalid value {"userId":"cjqql3r31hbga0a061jljgh7p"}; Field "userId" is not defined by type PostWhereInput; did you mean user?
+    at new CombinedError (/home/jonathan/Documents/programming/websites/inspinder/inspinder_v2_backend/node_modules/graphql-binding/node_modules/graphql-tools/dist/stitching/errors.js:83:28)
+    at Object.checkResultAndHandleErrors (/home/jonathan/Documents/programming/websites/inspinder/inspinder_v2_backend/node_modules/graphql-binding/node_modules/graphql-tools/dist/stitching/errors.js:101:15)
+    at CheckResultAndHandleErrors.transformResult (/home/jonathan/Documents/programming/websites/inspinder/inspinder_v2_backend/node_modules/graphql-binding/node_modules/graphql-tools/dist/transforms/CheckResultAndHandleErrors.js:10:25)
+    at /home/jonathan/Documents/programming/websites/inspinder/inspinder_v2_backend/node_modules/graphql-binding/node_modules/graphql-tools/dist/transforms/transforms.js:19:54
+    at Array.reduce (<anonymous>)
+    at applyResultTransforms (/home/jonathan/Documents/programming/websites/inspinder/inspinder_v2_backend/node_modules/graphql-binding/node_modules/graphql-tools/dist/transforms/transforms.js:18:23)
+    at /home/jonathan/Documents/programming/websites/inspinder/inspinder_v2_backend/node_modules/graphql-binding/node_modules/graphql-tools/dist/stitching/delegateToSchema.js:102:50
+    at step (/home/jonathan/Documents/programming/websites/inspinder/inspinder_v2_backend/node_modules/graphql-binding/node_modules/graphql-tools/dist/stitching/delegateToSchema.js:40:23)
+    at Object.next (/home/jonathan/Documents/programming/websites/inspinder/inspinder_v2_backend/node_modules/graphql-binding/node_modules/graphql-tools/dist/stitching/delegateToSchema.js:21:53)
+    at fulfilled (/home/jonathan/Documents/programming/websites/inspinder/inspinder_v2_backend/node_modules/graphql-binding/node_modules/graphql-tools/dist/stitching/delegateToSchema.js:12:58)
+
+Error: Variable "$_v0_where" got invalid value {"userId":"cjqql3r31hbga0a061jljgh7p"}; Field "userId" is not defined by type PostWhereInput; did you mean user?
+    at new CombinedError (/home/jonathan/Documents/programming/websites/inspinder/inspinder_v2_backend/node_modules/graphql-binding/node_modules/graphql-tools/dist/stitching/errors.js:83:28)
+    at Object.checkResultAndHandleErrors (/home/jonathan/Documents/programming/websites/inspinder/inspinder_v2_backend/node_modules/graphql-binding/node_modules/graphql-tools/dist/stitching/errors.js:101:15)
+    at CheckResultAndHandleErrors.transformResult (/home/jonathan/Documents/programming/websites/inspinder/inspinder_v2_backend/node_modules/graphql-binding/nod

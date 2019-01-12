@@ -12,46 +12,110 @@ const Mutations = {
 		if (!userId) {
 			throw new Error('You must be logged in to make a post');
 		}
-		//1. get all the tags from the user
-		let userTags = await ctx.db.query.tags({ where: { user: { id: userId } } });
-		//2. go through all of them, seperating then into two lists. the tags that are new and the ones that already exists
-		let [ newTags, existingTags ] = splitInTwo(args.tags, userTags, (a, b) => a === b.name);
-		//3. create the new tags
-		let newTagsDB = await Promise.all(createNewTags({ ctx, info, userId, tags: newTags }));
-		//4. concat the two tag lists and create a new post with those
-		let allTags = newTagsDB.concat(existingTags);
-		allTags = allTags.map((tag) => ({ id: tag.id }));
-		const data = { ...args, tags: { connect: allTags }, user: { connect: { id: userId } } };
+		let containsTags = args.tags && args.tags.length > 0;
+		let data = { ...args, user: { connect: { id: userId } } };
+		let allTags = [];
+		if (containsTags) {
+			//1. get all the tags from the user
+			let userTags = await ctx.db.query.tags({ where: { user: { id: userId } } });
+			//2. go through all of them, seperating then into two lists. the tags that are new and the ones that already exists
+			let [ newTags, existingTags ] = splitInTwo(args.tags, userTags, (a, b) => a === b.name);
+			//3. create the new tags
+			let newTagsDB = await Promise.all(createNewTags({ ctx, info, userId, tags: newTags }));
+			//4. concat the two tag lists and create a new post with those
+			allTags = newTagsDB.concat(existingTags).map((tag) => ({ id: tag.id }));
+			data = { ...data, tags: { connect: allTags } };
+		}
+
 		const post = await ctx.db.mutation.createPost({ data }, info);
-		//5. update the tags with the post
-		updateTags({
-			ctx,
-			tags: allTags,
-			data: { posts: { connect: { id: post.id } } }
-		});
+
+		//5. update the tags (if there are any) with the post
+		if (containsTags) {
+			updateTags({
+				ctx,
+				tags: allTags,
+				data: { posts: { connect: { id: post.id } } }
+			});
+		}
 
 		return post;
 	},
-	async updatePost(parent, args, ctx, info) {
+
+	async updatePost(_, args, ctx, info) {
+		const { pubsub } = ctx;
+
+		const userId = ctx.request.userId;
 		const updates = { ...args };
-		if (updates.tags) {
-			// updates.tags = {set: args.tags}
+		const updatedTags = updates.tags;
+		let tags = null;
+		if (updatedTags) {
+			//1. get the posts tags
+			const oldPost = await ctx.db.query.post({ where: { id: args.id } }, `{tags{id name}}`);
+			//2. find the tags that were deleted
+			let deletedTags = oldPost.tags.filter((tag) => !updatedTags.includes(tag.name));
+			deletedTags = deletedTags.map((tag) => ({ id: tag.id }));
+			//3. find the tags that were added
+			const newTags = updatedTags.filter((tag) => !oldPost.tags.some((oldTag) => tag === oldTag.name));
+			//3.1 check which of the new tags already are in db.
+			let allNewTags = [];
+			if (newTags && newTags.length > 0) {
+				let userTags = await ctx.db.query.tags({ where: { user: { id: userId } } }, `{id name}`);
+				let [ tagsNotInDB, tagsInDB ] = splitInTwo(newTags, userTags, (a, b) => a == b.name);
+				//3.2 create the tags that were not
+				let newTagsDB =
+					newTags.length < 1
+						? []
+						: await Promise.all(createNewTags({ ctx, info: `{id}`, userId, tags: tagsNotInDB }));
+				allNewTags = newTagsDB.concat(tagsInDB).map((tag) => ({ id: tag.id }));
+			}
+			tags = {
+				connect: allNewTags,
+				disconnect: deletedTags
+			};
 		}
 		delete updates.id;
-		return ctx.db.mutation.updatePost(
+		const updatedPost = await ctx.db.mutation.updatePost(
 			{
-				data: { ...updates },
+				data: {
+					...updates,
+					tags
+				},
 				where: { id: args.id }
 			},
 			info
 		);
+		//2.1 publish the tags that were deleted and has no posts so the client can delete them
+		if (tags) {
+			let deletedTags = [...tags.disconnect];
+			if (deletedTags) {
+				//foreach tag, get the tag from db, and call publish
+				deletedTags.forEach(async (tag) => {
+					const tagDB = await ctx.db.query.tag({where: {id: tag.id}}, `{id name posts{id} user{id}}`);
+					//if there are less than 1 posts in the tag, delete the tag
+					if(tagDB.posts && tagDB.posts.length < 1) {
+						ctx.db.mutation.deleteTag({where: {id: tagDB.id}})
+						//TODO publish the tag that has been deleted so client can update
+						// pubsub.publish('PUBSUB_TAG_DELETED', {
+						// 	tagWithoutPosts: tagDB
+						// });
+					}
+				})
+			}
+		}
+		return updatedPost;
 	},
 	async deletePost(parent, args, ctx, info) {
 		const where = { id: args.id };
-		//1find the post
+		//1. find the post
+		const post = await ctx.db.query.post({ where }, `{id title user{id} tags{id posts{id}}}`);
 
-		const post = await ctx.db.query.post({ where }, `{id title user{id}}`);
-		//2check if they own that item or has that permission
+		//2. if the tags of the posts contains ONE post, then delete it!
+		post.tags.forEach((tag) => {
+			if(tag.posts.length <= 1) {
+				ctx.db.mutation.deleteTag({where: {id: tag.id }})
+			}
+		})
+		//2. check if they own that item or has that permission
 		const ownsPost = post.user.is === ctx.request.userId;
 		const hasPermission = ctx.request.user.permissions.some((permission) =>
 			[ 'ADMIN', 'ITEMDELETE' ].includes(permission)
@@ -59,7 +123,7 @@ const Mutations = {
 		if (!ownsPost && !hasPermission) {
 			throw new Error("you don't have permission to delete this post");
 		}
-		//3 delete post
+		//3. delete post
 		return ctx.db.mutation.deletePost({ where }, info);
 	},
 

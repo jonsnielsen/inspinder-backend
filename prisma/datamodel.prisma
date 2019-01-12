@@ -33,5 +33,5 @@ type Tag {
   id: ID! @unique
   user: User!
   name: String!
-  posts: [Post]!
+  posts: [Post!]!
 }
