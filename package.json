@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "the backend of sick fits",
   "engines": {
-    "node": "v8.10.0",
-    "npm": "6.5.0"
+    "node": ">= 8.10.0",
+    "npm": ">= 6.5.0"
   },
   "engines.npm": "6.5.0",
   "scripts": {
