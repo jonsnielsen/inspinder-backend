@@ -1,8 +1,11 @@
 # endpoint: ${env:PRISMA_ENDPOINT}
 #endpoint: https://eu1.prisma.sh/jonathansparvath-a94afa/inspinder/dev
-endpoint: https://inspinder-0ba7b13917.herokuapp.com/inspinder-prod/prod
+#endpoint: https://inspinder-0ba7b13917.herokuapp.com/inspinder-prod/prod
+#endpoint: http://localhost:4466
+endpoint: https://inpinder-prisma-ba2177d2a4.herokuapp.com/inspinder-prisma/prod
 datamodel: datamodel.prisma
-secret: ${env:PRISMA_SECRET}
+# secret: ${env:PRISMA_SECRET}
+secret: thisistotallysecretforareason
 hooks:
   post-deploy:
     - graphql get-schema -p prisma
