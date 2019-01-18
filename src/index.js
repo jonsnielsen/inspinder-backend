@@ -9,7 +9,12 @@ const server = createServer();
 //   {
 // 	rejectUnauthorized: false
 // }
-
+server.express.use(
+	cors({
+		credentials: true,
+		origin: `https://inspinder-frontend-prod.herokuapp.com/`
+	})
+);
 server.express.use(cookieParser);
 // server.express.use(cors());
 //decode the JWT so we can get the user id on each request
@@ -34,14 +39,6 @@ server.express.use(async (req, res, next) => {
 });
 
 //start the server
-server.start(
-	{
-		cors: {
-			credentials: true,
-			origin: `https://inspinder-frontend-prod.herokuapp.com/`
-		}
-	},
-	(deets) => {
-		// console.log(`Server is now running on port http://localhost:${deets.port}`);
-	}
-);
+server.start({}, (deets) => {
+	// console.log(`Server is now running on port http://localhost:${deets.port}`);
+});
