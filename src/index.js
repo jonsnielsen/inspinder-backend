@@ -9,7 +9,12 @@ const server = createServer();
 //   {
 // 	rejectUnauthorized: false
 // }
-server.express.use(cors());
+server.express.use(
+	cors({
+		origin: 'process.env.FRONTEND_URL',
+		credentials: true
+	})
+);
 server.express.use(cookieParser);
 // server.express.use(cors());
 //decode the JWT so we can get the user id on each request
