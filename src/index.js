@@ -9,12 +9,7 @@ const server = createServer();
 //   {
 // 	rejectUnauthorized: false
 // }
-// server.express.use(
-// 	cors({
-// 		credentials: true,
-// 		origin: process.env.FRONTEND_URL
-// 	})
-// );
+server.express.use(cors());
 server.express.use(cookieParser);
 // server.express.use(cors());
 //decode the JWT so we can get the user id on each request
@@ -40,13 +35,13 @@ server.express.use(async (req, res, next) => {
 
 //start the server
 server.start(
-	{
-		cors: {
-			credentials: true,
-			// origin: process.env.FRONTEND_URL
-			origin: '*'
-		}
-	},
+	// {
+	// 	cors: {
+	// 		credentials: true,
+	// 		// origin: process.env.FRONTEND_URL
+	// 		origin: '*'
+	// 	}
+	// },
 	(deets) => {
 		console.log(`Server is now running on port http://localhost:${deets.port}`);
 		console.log(`alowed frontend is ${process.env.FRONTEND_URL}`);
