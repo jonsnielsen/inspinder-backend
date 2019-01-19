@@ -49,6 +49,6 @@ server.start(
 	},
 	(deets) => {
 		console.log(`Server is now running on port http://localhost:${deets.port}`);
-		console.log(`allowed frontend is ${process.env.FRONTEND_URL}`);
+		console.log(`alowed frontend is ${process.env.FRONTEND_URL}`);
 	}
 );
