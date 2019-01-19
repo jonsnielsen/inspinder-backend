@@ -86,20 +86,20 @@ const Mutations = {
 		);
 		//2.1 publish the tags that were deleted and has no posts so the client can delete them
 		if (tags) {
-			let deletedTags = [...tags.disconnect];
+			let deletedTags = [ ...tags.disconnect ];
 			if (deletedTags) {
 				//foreach tag, get the tag from db, and call publish
 				deletedTags.forEach(async (tag) => {
-					const tagDB = await ctx.db.query.tag({where: {id: tag.id}}, `{id name posts{id} user{id}}`);
+					const tagDB = await ctx.db.query.tag({ where: { id: tag.id } }, `{id name posts{id} user{id}}`);
 					//if there are less than 1 posts in the tag, delete the tag
-					if(tagDB.posts && tagDB.posts.length < 1) {
-						ctx.db.mutation.deleteTag({where: {id: tagDB.id}})
+					if (tagDB.posts && tagDB.posts.length < 1) {
+						ctx.db.mutation.deleteTag({ where: { id: tagDB.id } });
 						//TODO publish the tag that has been deleted so client can update
 						// pubsub.publish('PUBSUB_TAG_DELETED', {
 						// 	tagWithoutPosts: tagDB
 						// });
 					}
-				})
+				});
 			}
 		}
 		return updatedPost;
@@ -111,10 +111,10 @@ const Mutations = {
 
 		//2. if the tags of the posts contains ONE post, then delete it!
 		post.tags.forEach((tag) => {
-			if(tag.posts.length <= 1) {
-				ctx.db.mutation.deleteTag({where: {id: tag.id }})
+			if (tag.posts.length <= 1) {
+				ctx.db.mutation.deleteTag({ where: { id: tag.id } });
 			}
-		})
+		});
 		//2. check if they own that item or has that permission
 		const ownsPost = post.user.is === ctx.request.userId;
 		const hasPermission = ctx.request.user.permissions.some((permission) =>
@@ -151,6 +151,8 @@ const Mutations = {
 	},
 	async signin(parent, { email, password }, ctx, info) {
 		//check if there exists a user with the password
+		console.log('trying to signing');
+		console.log('email is: ' + email);
 		const user = await ctx.db.query.user({ where: { email } });
 		if (!user) {
 			throw new Error(`No such user found for email ${email}`);

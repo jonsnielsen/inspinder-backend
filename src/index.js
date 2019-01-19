@@ -12,7 +12,7 @@ const server = createServer();
 server.express.use(
 	cors({
 		credentials: true,
-		origin: `https://inspinder-frontend-prod.herokuapp.com/`
+		origin: process.env.FRONTEND_URL
 	})
 );
 server.express.use(cookieParser);
@@ -40,5 +40,6 @@ server.express.use(async (req, res, next) => {
 
 //start the server
 server.start({}, (deets) => {
-	// console.log(`Server is now running on port http://localhost:${deets.port}`);
+	console.log(`Server is now running on port http://localhost:${deets.port}`);
+	console.log(`allowed frontend is ${process.env.FRONTEND_URL}`);
 });
