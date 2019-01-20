@@ -116,7 +116,7 @@ const Mutations = {
 			}
 		});
 		//2. check if they own that item or has that permission
-		const ownsPost = post.user.is === ctx.request.userId;
+		const ownsPost = post.user.id === ctx.request.userId;
 		const hasPermission = ctx.request.user.permissions.some((permission) =>
 			[ 'ADMIN', 'ITEMDELETE' ].includes(permission)
 		);
