@@ -38,14 +38,11 @@ server.express.use(async (req, res, next) => {
 	next();
 });
 
-//start the server
 server.start(
 	{
 		cors: {
 			credentials: true,
-			// origin: 'https://inspinder-frontend-prod.herokuapp.com'
 			origin: process.env.FRONTEND_URL
-			// origin: '
 		}
 	},
 	(deets) => {

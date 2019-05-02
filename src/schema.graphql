@@ -4,7 +4,7 @@ type SuccessMessage {
 }
 
 type TagId {
-  id: ID
+	id: ID
 }
 
 type Mutation {
@@ -20,8 +20,11 @@ type Mutation {
 }
 
 type Query {
-	posts: [Post]
+	posts: [Post!]!
 	post(where: PostWhereUniqueInput!): Post
+	postsByTag(where: TagWhereUniqueInput!): [Post!]!
+	# if the tagIds is un defined or null, return all posts
+	postsByTags(tagIds: [ID!]): [Post!]
 	users: [User]!
 	me: User
 	tags: [Tag!]!

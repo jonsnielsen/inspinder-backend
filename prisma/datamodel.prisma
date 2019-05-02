@@ -1,37 +1,38 @@
 enum Permission {
-  ADMIN
-  USER
-  POST_CREATE
-  POST_UPDATE
-  POST_DELETE
-  PERMISSIONS_UPDATE
+	ADMIN
+	USER
+	POST_CREATE
+	POST_UPDATE
+	POST_DELETE
+	PERMISSIONS_UPDATE
 }
 
 type User {
-  id: ID! @unique
-  name: String!
-  email: String! @unique
-  password: String! 
-  resetToken: String
-  resetTokenExpiry: Float
-  permissions: [Permission!]
-  tags: [Tag]
+	id: ID! @unique
+	name: String!
+	email: String! @unique
+	password: String!
+	resetToken: String
+	resetTokenExpiry: Float
+	permissions: [Permission!]
+	tags: [Tag]
 }
 
 type Post {
-  id: ID! @unique
-  title: String
-  description: String
-  image: String
-  largeImage: String
-  link: String
-  tags: [Tag!]!
-  user: User!
+	id: ID! @unique
+	title: String
+	description: String
+	image: String
+	largeImage: String
+	link: String
+	tags: [Tag!]!
+	user: User!
+	createdAt: DateTime!
 }
 
 type Tag {
-  id: ID! @unique
-  user: User!
-  name: String!
-  posts: [Post!]!
+	id: ID! @unique
+	user: User!
+	name: String!
+	posts: [Post!]!
 }

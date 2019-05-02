@@ -1,5 +1,5 @@
 const { forwardTo } = require('prisma-binding');
-const { hasPermission } = require('../utils/utils');
+const { hasPermission, arrayToSetArray } = require('../utils/utils');
 
 const Query = {
 	posts(_, __, ctx, info) {
@@ -7,7 +7,7 @@ const Query = {
 		if (!userId) {
 			throw new Error('You must be logged in!');
 		}
-		return ctx.db.query.posts({where: {user: {id: userId} }}, info)
+		return ctx.db.query.posts({ where: { user: { id: userId } } }, info);
 	},
 	post: forwardTo('db'),
 	me(parent, args, ctx, info) {
@@ -22,7 +22,7 @@ const Query = {
 			info
 		);
 	},
-	async users(parent, args, ctx, info) {
+	async users(_, __, ctx, info) {
 		//1. check if the user is loggen in
 		if (!ctx.request.userId) {
 			throw new Error('you must be logged in');
@@ -38,14 +38,59 @@ const Query = {
 			throw new Error('you must be logged in');
 		}
 		return db.query.tags({ where: { user: { id: request.userId } } }, info);
-	}
-	// tags(_, __,  {db, request}, info) {
+	},
+	async postsByTags(_, { tagIds }, { db, request }, info) {
+		if (!request.userId) {
+			throw new Error('You must be logged in!');
+		}
+		//TODO go through the ids, if the user has read permission, receive the posts.
+		//TODO as of this moment, the user blindly receives all posts
+		//get all tags
+		if (!tagIds || tagIds.length === 0) {
+			return db.query.posts({ where: { user: { id: request.userId } } }, info);
+		}
+		const tags = await Promise.all(
+			tagIds.map(async (tagId) => {
+				const tag = await db.query.tags(
+					{ where: { id: tagId } },
+					`{posts {id title link description image tags{id name posts {id}}}}`
+					// 	`{
+					// 	tag {
+					// 		id
+					// 		name
+					// 		posts {
+					// 			title
+					// 			link
+					// 			description
+					// 			image
+					// 			tags{
+					// 				id
+					// 				name
+					// 				posts {
+					// 					id
+					// 				}
+					// 			}
+					// 		}
+					// 	}
+					// }`
+				);
+				// ))[0].posts
+				const firstIndex = tag[0];
+				const posts = firstIndex.posts;
+				return posts;
+			})
+		);
+		// const posts = await Promise.all(tagIds.map(
+		// 	async (tagId) => (
+		// 		await db.query.posts({where})
+		// 	)
+		// ))
+		// db.query.posts({ where: { tag: { id: request.userId } } }, info);
+		const flattened = [].concat.apply([], tags);
+		const flattenedSet = arrayToSetArray(flattened);
 
-	// 	if (postId) {
-	// 		return db.query.tags({ where: { user: { id: userId }, posts_some: { id: postId } } }, info);
-	// 	}
-	// 	return db.query.tags({ where: { user: { id: userId } } }, info);
-	// }
+		return flattenedSet;
+	}
 };
 
 module.exports = Query;
